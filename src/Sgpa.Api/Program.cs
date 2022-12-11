@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Sgpa.Api.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,8 +15,12 @@ var configuration = builder.Configuration;
 builder.Services.AddApiConfiguration(configuration);
 builder.Services.AddSwaggerConfiguration();
 
-var app = builder.Build();
+builder.Services.ResolveDependencies();
 
-app.UseApiConfiguration();
-app.UseSwaggerConfiguration();
+var app = builder.Build();
+var apiVersionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+app.UseApiConfiguration(app.Environment);
+app.UseSwaggerConfiguration(apiVersionDescriptionProvider);
+
 app.Run();
